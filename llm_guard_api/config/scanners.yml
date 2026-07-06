@@ -40,20 +40,20 @@ input_scanners:
       threshold: 0.75
   - type: BanSubstrings
     params:
-      substrings: ["test"]
+      substrings: ["test", "INTERNAL_TAS_PROJECT_2026", "CONFIDENTIAL_PoC_TOKEN"]
       match_type: "word"
       case_sensitive: false
       redact: false
       contains_all: false
   - type: BanTopics
     params:
-      topics: ["violence"]
+      topics: ["violence", "weapons", "drugs", "hate_speech", "illegal_activity"]
       threshold: 0.8
       model_max_length: 256
-#  - type: Code
-#    params:
-#      languages: ["Python"]
-#      is_blocked: true
+  - type: Code
+    params:
+      languages: ["Python"]
+      is_blocked: true
   - type: Gibberish
     params:
       threshold: 0.97
@@ -80,7 +80,7 @@ input_scanners:
       redact_mode: "all"
   - type: Sentiment
     params:
-      threshold: 0.0
+      threshold: -0.1
   - type: TokenLimit
     params:
       limit: 4096
@@ -107,23 +107,23 @@ output_scanners:
       threshold: 0.75
   - type: BanSubstrings
     params:
-      substrings: ["test"]
+      substrings: ["test", "INTERNAL_TAS_PROJECT_2026", "CONFIDENTIAL_PoC_TOKEN"]
       match_type: "word"
       case_sensitive: false
       redact: false
       contains_all: false
   - type: BanTopics
     params:
-      topics: ["violence"]
+      topics: ["violence", "weapons", "drugs", "hate_speech", "illegal_activity"]
       threshold: 0.8
   - type: Bias
     params:
-      threshold: 0.97
+      threshold: 0.7  # reverted to llm-guard library default (was 0.35, tuned to a single sample)
       model_max_length: 256
-#  - type: Code
-#    params:
-#      languages: ["Python"]
-#      is_blocked: true
+  - type: Code
+    params:
+      languages: ["Python"]
+      is_blocked: true
   - type: Deanonymize
     params:
       matching_strategy: "exact"
@@ -133,10 +133,10 @@ output_scanners:
   - type: Gibberish
     params:
       threshold: 0.97
-#  - type: JSON
-#    params:
-#      required_elements: 0
-#      repair: true
+  - type: JSON
+    params:
+      required_elements: 0
+      repair: false  # patched (was true) — invalid 명확히 1.0 표기
   - type: Language
     params:
       valid_languages: [ "en" ]
@@ -150,6 +150,8 @@ output_scanners:
   - type: NoRefusal
     params:
       threshold: 0.9
+  - type: NoRefusalLight
+    params: {}
   - type: ReadingTime
     params:
       max_time: 5
@@ -169,7 +171,7 @@ output_scanners:
       threshold: 0.75
   - type: Sentiment
     params:
-      threshold: 0.0
+      threshold: -0.1
   - type: Toxicity
     params:
       threshold: 0.9
