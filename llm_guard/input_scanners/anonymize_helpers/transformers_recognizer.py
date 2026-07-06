@@ -211,17 +211,24 @@ class TransformersRecognizer(EntityRecognizer):
         assert self.pipeline is not None
         assert self.pipeline.tokenizer is not None
 
-        model_max_length = self.pipeline.tokenizer.model_max_length
-        # calculate inputs based on the text
+        # Many tokenizers never have `model_max_length` configured by the
+        # checkpoint author, in which case transformers reports a sentinel
+        # "unbounded" value (~1e30) instead of the model's real limit (e.g.
+        # 512). Gating the chunking decision on that unreliable value lets
+        # pathologically long input bypass chunking entirely and run
+        # self-attention over the whole text in one pass, which is O(n^2)
+        # in sequence length and can exhaust memory. `self.chunk_length` is
+        # a library-controlled default (not derived from tokenizer
+        # metadata), so use it for this decision instead.
         text_length = len(text)
         # split text into chunks
-        if text_length <= model_max_length:
+        if text_length <= self.chunk_length:
             predictions = self.pipeline(text)  # type: ignore
         else:
             LOGGER.info(
                 "splitting the text into chunks",
                 length=text_length,
-                model_max_length=model_max_length,
+                chunk_length=self.chunk_length,
             )
             predictions: list[dict[str, Any]] = []
             chunk_indexes = split_text_to_word_chunks(
