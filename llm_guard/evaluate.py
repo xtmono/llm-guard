@@ -48,7 +48,14 @@ def scan_prompt(
     start_time = time.time()
     for scanner in scanners:
         start_time_scanner = time.time()
-        sanitized_prompt, is_valid, risk_score = scanner.scan(sanitized_prompt)
+        try:
+            sanitized_prompt, is_valid, risk_score = scanner.scan(sanitized_prompt)
+        except Exception:
+            LOGGER.exception(
+                "Scanner failed, skipping and keeping prior sanitized prompt",
+                scanner=type(scanner).__name__,
+            )
+            continue
         elapsed_time_scanner = time.time() - start_time_scanner
 
         LOGGER.debug(
@@ -102,7 +109,14 @@ def scan_output(
     start_time = time.time()
     for scanner in scanners:
         start_time_scanner = time.time()
-        sanitized_output, is_valid, risk_score = scanner.scan(prompt, sanitized_output)
+        try:
+            sanitized_output, is_valid, risk_score = scanner.scan(prompt, sanitized_output)
+        except Exception:
+            LOGGER.exception(
+                "Scanner failed, skipping and keeping prior sanitized output",
+                scanner=type(scanner).__name__,
+            )
+            continue
         elapsed_time_scanner = time.time() - start_time_scanner
 
         LOGGER.debug(
