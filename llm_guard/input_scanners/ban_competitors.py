@@ -60,6 +60,7 @@ class BanCompetitors(Scanner):
             model = MODEL_V1
 
         self._competitors = competitors
+        self._competitors_lower = {competitor.lower() for competitor in competitors}
         self._threshold = threshold
         self._redact = redact
         self.chunk_length = chunk_size
@@ -84,7 +85,7 @@ class BanCompetitors(Scanner):
 
         for entity in entities:
             entity["word"] = entity["word"].strip()
-            if entity["word"] not in self._competitors:
+            if entity["word"].lower() not in self._competitors_lower:
                 LOGGER.debug("Entity is not a specified competitor", entity=entity["word"])
                 continue
 
