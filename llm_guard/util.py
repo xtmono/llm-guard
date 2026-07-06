@@ -136,10 +136,19 @@ def calculate_risk_score(score: float, threshold: float) -> float:
     Calculate the risk score based on the threshold. The risk score is a value between -1 and 1.
     Before the threshold, the risk score is negative and after the threshold, the risk score is positive.
     """
+    if score == threshold:
+        return 0.0
+
     if score > threshold:
-        risk_score = round((score - threshold) / (1 - threshold), 1)
+        denominator = 1 - threshold
+        if denominator == 0:
+            return 1.0
+        risk_score = round((score - threshold) / denominator, 1)
     else:
-        risk_score = round((score - threshold) / threshold, 1)
+        denominator = threshold
+        if denominator == 0:
+            return -1.0
+        risk_score = round((score - threshold) / denominator, 1)
 
     return min(max(risk_score, -1), 1)
 
