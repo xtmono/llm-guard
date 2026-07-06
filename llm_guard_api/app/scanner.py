@@ -48,13 +48,16 @@ def get_input_scanners(scanners: List[ScannerConfig], vault: Vault) -> List[Inpu
     input_scanners_loaded = []
     for scanner in scanners:
         LOGGER.debug("Loading input scanner", scanner=scanner.type, **get_resource_utilization())
-        input_scanners_loaded.append(
-            _get_input_scanner(
-                scanner.type,
-                scanner.params,
-                vault=vault,
+        try:
+            input_scanners_loaded.append(
+                _get_input_scanner(
+                    scanner.type,
+                    scanner.params,
+                    vault=vault,
+                )
             )
-        )
+        except Exception:
+            LOGGER.exception("Failed to load input scanner, skipping", scanner=scanner.type)
 
     return input_scanners_loaded
 
@@ -66,13 +69,16 @@ def get_output_scanners(scanners: List[ScannerConfig], vault: Vault) -> List[Out
     output_scanners_loaded = []
     for scanner in scanners:
         LOGGER.debug("Loading output scanner", scanner=scanner.type, **get_resource_utilization())
-        output_scanners_loaded.append(
-            _get_output_scanner(
-                scanner.type,
-                scanner.params,
-                vault=vault,
+        try:
+            output_scanners_loaded.append(
+                _get_output_scanner(
+                    scanner.type,
+                    scanner.params,
+                    vault=vault,
+                )
             )
-        )
+        except Exception:
+            LOGGER.exception("Failed to load output scanner, skipping", scanner=scanner.type)
 
     return output_scanners_loaded
 

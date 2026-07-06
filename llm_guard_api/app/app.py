@@ -302,6 +302,10 @@ def register_routes(
             )
 
             for result in results:
+                if isinstance(result, Exception) and not isinstance(result, InputIsInvalid):
+                    LOGGER.error(f"Scanner output error detected: {result}")
+                    continue
+
                 if isinstance(result, InputIsInvalid):
                     result_is_valid = False
                     results_score[result.scanner_name] = result.risk_score
@@ -429,6 +433,10 @@ def register_routes(
             )
 
             for result in results:
+                if isinstance(result, Exception) and not isinstance(result, InputIsInvalid):
+                    LOGGER.error(f"Scanner input error detected: {result}")
+                    continue
+
                 if isinstance(result, InputIsInvalid):
                     result_is_valid = False
                     results_score[result.scanner_name] = result.risk_score
